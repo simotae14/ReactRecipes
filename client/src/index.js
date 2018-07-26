@@ -6,4 +6,13 @@ import App from './components/App';
 import ApolloClient from 'apollo-boost';
 import { ApolloProvider } from 'react-apollo';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+// creo il client che punta a BE
+const client =  new ApolloClient({
+    uri: 'http://localhost:4444/graphql'
+});
+
+ReactDOM.render(
+    <ApolloProvider client={client}>
+        <App />
+    </ApolloProvider>,
+document.getElementById('root'));
