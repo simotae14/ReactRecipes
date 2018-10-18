@@ -43,7 +43,7 @@ exports.resolvers = {
             // restituisco il token come da query
             // la secret la prendo dall'env
             // scade in 1 ora
-            return { token: createToken(newUser, process.env.SECRET,'1hr' ) };
+            return { token: createToken(newUser, process.env.SECRET, '1hr') };
         }
     }
 };
