@@ -1,5 +1,6 @@
 // importo package per le password
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 // funzione per creare il token criptato
 const createToken = (user, secret, expiresIn) => {
@@ -24,6 +25,26 @@ exports.resolvers = {
 				username
 			}).save();
 			return newRecipe;
+		},
+		// creo la nuova mutation che è async, il context è l'User model
+		signinUser: async(root, { username, password }, { User }) => {
+			// check if the user existed
+			const user = await User.findOne({ username });
+			// if the user doesn't exist trhow an error
+			if (!user) {
+				throw new Error("User not found");
+			}
+			// if user exists check if the password match with the username
+			const isValidPassword = await bcrypt.compare(password, user.password);
+
+			// if the password isn't correct throw an error
+			if (!isValidPassword) {
+				throw new Error("Invalid password");
+			}
+			// restituisco il token come da query
+			// la secret la prendo dall'env
+			// scade in 1 ora
+			return { token: createToken(user, process.env.SECRET, "1hr") };
 		},
 		// creo la nuova mutation che è async, il context è l'User model
 		signupUser: async(root, { username, email, password }, { User }) => {
