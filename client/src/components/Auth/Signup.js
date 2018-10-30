@@ -1,6 +1,8 @@
 import React from 'react';
 import { Mutation } from 'react-apollo';
 
+import { SIGNUP_USER } from '../../queries';
+
 class Signup extends React.Component {
     state = {
         username: "",
@@ -15,6 +17,13 @@ class Signup extends React.Component {
             [name]: value
         });
     }
+    // handler for the submit
+    handleSubmit = (event, signupUser) => {
+        event.preventDefault();
+        signupUser().then(data => {
+            console.log(data);
+        });
+    }
     render() {
         const { username, email, password, passwordConfirmation } = this.state;
         return (
@@ -26,10 +35,10 @@ class Signup extends React.Component {
                 >
                     Signup
                 </h2>
-                <Mutation mutation={SIGNUP_USER}>
-                    {() => {
+                <Mutation mutation={SIGNUP_USER} variables={{ username, email, password }}>
+                    {(signupUser, { data, loading, error }) => {
                         return (
-                            <form className="form">
+                            <form className="form" onSubmit={event => this.handleSubmit(event, signupUser)}>
                                 <input
                                     type="text"
                                     name="username"
