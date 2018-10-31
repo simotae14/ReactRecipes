@@ -1,57 +1,64 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-require('dotenv').config({
-    path: 'variables.env'
+const express = require("express");
+const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+require("dotenv").config({
+	path: "variables.env"
 });
-const Recipe = require('./models/Recipe');
-const User = require('./models/User');
+const Recipe = require("./models/Recipe");
+const User = require("./models/User");
 
 // Recupera il middleware GraphQL-Express
-const { graphiqlExpress, graphqlExpress } = require('apollo-server-express');
-const { makeExecutableSchema } = require('graphql-tools');
-const { typeDefs } = require('./schema');
-const { resolvers } = require('./resolvers');
+const { graphiqlExpress, graphqlExpress } = require("apollo-server-express");
+const { makeExecutableSchema } = require("graphql-tools");
+const { typeDefs } = require("./schema");
+const { resolvers } = require("./resolvers");
 
 const schema = makeExecutableSchema({
-    typeDefs,
-    resolvers
+	typeDefs,
+	resolvers
 });
 
 // Connects to database
 mongoose
-    .connect(process.env.MONGO_URI)
-    .then(() => console.log('DB connected'))
-    .catch(err => console.error(err));
+	.connect(process.env.MONGO_URI)
+	.then(() => console.log("DB connected"))
+	.catch(err => console.error(err));
 
 // Initializes application
 const app = express();
 
 // cors options
 const corsOptions = {
-    origin: 'http://localhost:3000',
-    credentials: true
+	origin: "http://localhost:3000",
+	credentials: true
 };
 
 app.use(cors(corsOptions));
 
+// Set up JWT authentication middleware
+app.use(async (req, res, next) => {
+	const token = req.headers["authorization"];
+	console.log(token);
+	next();
+});
+
 // Creo la GraphiQL app
-app.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }));
+app.use("/graphiql", graphiqlExpress({ endpointURL: "/graphql" }));
 // Connetto gli Schema a GraphQL
 app.use(
-    '/graphql',
-    bodyParser.json(),
-    graphqlExpress({
-        schema,
-        context: {
-            Recipe,
-            User
-        }
-}));
+	"/graphql",
+	bodyParser.json(),
+	graphqlExpress({
+		schema,
+		context: {
+			Recipe,
+			User
+		}
+	}));
 
 const PORT = process.env.PORT || 4444;
 
 app.listen(PORT, () => {
-    console.log(`Server listening on PORT ${PORT}`);
+	console.log(`Server listening on PORT ${PORT}`);
 });

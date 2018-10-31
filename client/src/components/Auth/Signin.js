@@ -24,8 +24,11 @@ class Signin extends React.Component {
     // handler for the submit
     handleSubmit = (event, signinUser) => {
         event.preventDefault();
-        signinUser().then(data => {
+        signinUser().then(({ data }) => {
             console.log(data);
+
+            // set token inside the localStorage
+            localStorage.setItem('token', data.signinUser.token);
             // reset the input in the form
             this.clearState();
         });

@@ -26,8 +26,10 @@ class Signup extends React.Component {
     // handler for the submit
     handleSubmit = (event, signupUser) => {
         event.preventDefault();
-        signupUser().then(data => {
+        signupUser().then(({ data }) => {
             console.log(data);
+            // set token inside the localStorage
+            localStorage.setItem('token', data.signupUser.token);
             // reset the input in the form
             this.clearState();
         });
