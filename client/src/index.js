@@ -36,10 +36,10 @@ const client =  new ApolloClient({
 });
 
 // define new routes
-const Root = ({ refetch }) => (
+const Root = ({ refetch, session }) => (
     <Router>
         <Fragment>
-            <Navbar />
+            <Navbar session={session} />
             <Switch>
                 <Route
                     path="/"
