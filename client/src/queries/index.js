@@ -21,6 +21,7 @@ query($_id: ID!) {
         instructions
         createdDate
         likes
+        username
     }
 }
 `;
