@@ -1,19 +1,27 @@
 import React from 'react';
 
+import { withRouter } from 'react-router-dom';
+
 import { Mutation } from 'react-apollo';
 
-import { ADD_RECIPE } from '../../queries';
+import { ADD_RECIPE, GET_ALL_RECIPES } from '../../queries';
 
 import Error from '../Error';
 
+const initialState = {
+    name: "",
+    instructions: "",
+    category: "Breakfast",
+    description: "",
+    username: ""
+}
+
 class AddRecipe extends React.Component {
-    state = {
-        name: '',
-        instructions: '',
-        category: 'Breakfast',
-        description: '',
-        username: ''
-    };
+    state = { ...initialState };
+
+    clearState = () => {
+        this.setState({ ...initialState });
+    }
 
     componentDidMount() {
         this.setState({
@@ -32,6 +40,8 @@ class AddRecipe extends React.Component {
         event.preventDefault();
         addRecipe().then(({ data }) => {
             console.log(data);
+            this.clearState();
+            this.props.history.push("/");
         })
     }
 
@@ -41,10 +51,24 @@ class AddRecipe extends React.Component {
         return isInvalid;
     }
 
+    updateCache = (cache, { data: { addRecipe } }) => {
+        const { getAllRecipes } = cache.readQuery({ query: GET_ALL_RECIPES });
+        cache.writeQuery({
+            query: GET_ALL_RECIPES,
+            data: {
+                getAllRecipes: [ addRecipe, ...getAllRecipes ]
+            }
+        });
+    }
+
     render() {
         const { category, description, instructions, name, username } = this.state;
         return (
-        <Mutation mutation={ADD_RECIPE} variables={{category, description, instructions, name, username}}>
+        <Mutation
+            mutation={ADD_RECIPE}
+            variables={{category, description, instructions, name, username}}
+            update={this.updateCache}
+        >
             {(addRecipe, { data, loading, error }) => {
                 return (
                     <div className="App">
@@ -100,4 +124,4 @@ class AddRecipe extends React.Component {
     };
 };
 
-export default AddRecipe;
+export default withRouter(AddRecipe);
