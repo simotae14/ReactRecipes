@@ -26,6 +26,16 @@ query($_id: ID!) {
 }
 `;
 
+export const SEARCH_RECIPES = gql`
+    query($searchTerm: String) {
+        searchRecipes(searchTerm: $searchTerm) {
+            _id
+            name
+            likes
+        }
+    }
+`;
+
 /* Recipes Mutations */
 export const ADD_RECIPE = gql`
 mutation(
